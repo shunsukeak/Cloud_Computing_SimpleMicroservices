@@ -47,7 +47,6 @@ class StudentCreate(StudentBase):
         "json_schema_extra": {
             "examples": [
                 {
-                    "id": "11111111-1111-4111-8111-111111111111",
                     "name": "Bob Johnson",
                     "student_id": "bj2235",
                     "email": "bj2235@columbia.edu"

@@ -5,7 +5,7 @@ import socket
 from datetime import datetime
 
 from typing import Dict, List, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import FastAPI, HTTPException, Query, Path, Response
 
@@ -23,7 +23,7 @@ courses: Dict[UUID, CourseRead] = {}
 
 app = FastAPI(
     title="Course/Student API",
-    description="Demo FastAPI app with Course, Student, and Health endpoints",
+    description="Demo FastAPI app using Pydantic v2 models for Courses and Students",
     version="0.1.0",
 )
 
@@ -56,10 +56,8 @@ def get_health_with_path(
 # -----------------------------------------------------------------------------
 @app.post("/students", response_model=StudentRead, status_code=201)
 def create_student(student: StudentCreate):
-    if student.id in students:
-        raise HTTPException(status_code=400, detail="Student with this ID already exists")
-    
-    student_read = StudentRead(**student.model_dump())
+    new_id = uuid4()
+    student_read = StudentRead(id=new_id, **student.model_dump(exclude={'id'}))
     students[student_read.id] = student_read
     return student_read
 
@@ -83,14 +81,14 @@ def get_student(student_id: UUID):
         raise HTTPException(status_code=404, detail="Student not found")
     return students[student_id]
 
-@app.patch("/students/{student_id}", response_model=StudentRead)
-def update_student(student_id: UUID, update: StudentUpdate):
+@app.put("/students/{student_id}", response_model=StudentRead)
+def update_student(student_id: UUID, student: StudentCreate):
     if student_id not in students:
         raise HTTPException(status_code=404, detail="Student not found")
-    stored = students[student_id].model_dump()
-    stored.update(update.model_dump(exclude_unset=True))
-    students[student_id] = StudentRead(**stored)
-    return students[student_id]
+    
+    updated_student = StudentRead(id=student_id, **student.model_dump(exclude={'id'}))
+    students[student_id] = updated_student
+    return updated_student
 
 @app.delete("/students/{student_id}", status_code=204)
 def delete_student(student_id: UUID):
@@ -104,10 +102,8 @@ def delete_student(student_id: UUID):
 # -----------------------------------------------------------------------------
 @app.post("/courses", response_model=CourseRead, status_code=201)
 def create_course(course: CourseCreate):
-    if course.id in courses:
-        raise HTTPException(status_code=400, detail="Course with this ID already exists")
-    
-    course_read = CourseRead(**course.model_dump())
+    new_id = uuid4()
+    course_read = CourseRead(id=new_id, **course.model_dump(exclude={'id'}))
     courses[course_read.id] = course_read
     return course_read
 
@@ -134,14 +130,14 @@ def get_course(course_id: UUID):
         raise HTTPException(status_code=404, detail="Course not found")
     return courses[course_id]
 
-@app.patch("/courses/{course_id}", response_model=CourseRead)
-def update_course(course_id: UUID, update: CourseUpdate):
+@app.put("/courses/{course_id}", response_model=CourseRead)
+def update_course(course_id: UUID, course: CourseCreate):
     if course_id not in courses:
         raise HTTPException(status_code=404, detail="Course not found")
-    stored = courses[course_id].model_dump()
-    stored.update(update.model_dump(exclude_unset=True))
-    courses[course_id] = CourseRead(**stored)
-    return courses[course_id]
+    
+    updated_course = CourseRead(id=course_id, **course.model_dump(exclude={'id'}))
+    courses[course_id] = updated_course
+    return updated_course
 
 @app.delete("/courses/{course_id}", status_code=204)
 def delete_course(course_id: UUID):
