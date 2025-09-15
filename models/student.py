@@ -5,7 +5,6 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
 
-
 class StudentBase(BaseModel):
     id: UUID = Field(
         default_factory=uuid4,
@@ -41,7 +40,6 @@ class StudentBase(BaseModel):
         }
     }
 
-
 class StudentCreate(StudentBase):
     model_config = {
         "json_schema_extra": {
@@ -54,7 +52,6 @@ class StudentCreate(StudentBase):
             ]
         }
     }
-
 
 class StudentUpdate(BaseModel):
     name: Optional[str] = Field(
@@ -78,7 +75,6 @@ class StudentUpdate(BaseModel):
             ]
         }
     }
-
 
 class StudentRead(StudentBase):
     created_at: datetime = Field(

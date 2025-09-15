@@ -4,9 +4,7 @@ from typing import Optional, List
 from uuid import UUID, uuid4
 from datetime import datetime
 from pydantic import BaseModel, Field
-
 from .student import StudentBase
-
 
 class CourseBase(BaseModel):
     name: str = Field(
@@ -29,7 +27,6 @@ class CourseBase(BaseModel):
         description="Credits",
         json_schema_extra={"example": 3}
     )
-
 
     enrolled_students: List[StudentBase] = Field(
         default_factory=list,
@@ -66,7 +63,6 @@ class CourseBase(BaseModel):
             ]
         }
     }
-
 
 class CourseCreate(CourseBase):
     model_config = {

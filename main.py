@@ -27,9 +27,6 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# -----------------------------------------------------------------------------
-# Health endpoints
-# -----------------------------------------------------------------------------
 def make_health(echo: Optional[str], path_echo: Optional[str]=None) -> Health:
     return Health(
         status=200,
